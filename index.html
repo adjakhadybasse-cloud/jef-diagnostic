@@ -244,7 +244,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @keyframes drift1{to{transform:translate(8vw,6vh) scale(1.1)}}
 @keyframes drift2{to{transform:translate(-6vw,10vh) scale(.92)}}
 .mq-clip{overflow:hidden;padding-block:20px 6px;position:relative;z-index:1}
-.ticker,.topbar-wrap,.hero,.marquee,.progs,.tabs-wrap,main,footer{position:relative;z-index:1}
+.ticker,.topbar-wrap,.hero,.marquee,.progs,.progs-sec,.tabs-wrap,main,footer{position:relative;z-index:1}
 
 /* ticker */
 .ticker{background:var(--wine);color:var(--cream);border-bottom:1px solid rgba(201,164,107,.25)}
@@ -446,6 +446,11 @@ footer .slogan em{color:var(--gold)}
 @media (max-width:900px){.bgart .ba{opacity:.08}.bgart .ba-notif{opacity:.1!important}.bgart .ba-hash,.bgart .ba-target,.bgart .ba-tag{display:none}.ba-phone{width:130px;left:-30px}.ba-notif{width:210px;right:-40px;top:9%}.ba-chat{width:190px;left:-20px}.ba-chart{width:170px;right:-30px}.ba-mega{width:110px}.ba-hearts{width:70px;left:auto;right:8%;top:30%}}
 @media (prefers-reduced-motion:reduce){.bgart .ba{animation:none}}
 
+.progs-sec{padding-block:6px 40px}
+.progs-sec .progs-p{color:var(--muted);max-width:62ch;margin:10px 0 0}
+.progs-sec .progs{padding-top:18px}
+.pcard.reco{border-color:var(--gold)}
+.pcard .reco-tag{justify-self:start;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#13080A;background:var(--gold);border-radius:99px;padding:4px 10px}
 /* Icônes */
 .ico{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
 .hic{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;color:var(--gold);font-size:20px;border:1px solid rgba(201,164,107,.35);background:linear-gradient(160deg,rgba(201,164,107,.16),rgba(201,164,107,.03))}
@@ -514,10 +519,10 @@ h2.has-ic .hic{width:50px;height:50px;font-size:25px;border-radius:14px}
   </div>
 </header>
 <div class="mq-clip"><div class="marquee" aria-hidden="true"><div class="mq-run" id="mq"></div></div></div>
-<section class="progs wide" id="progs" aria-label="Programmes"></section>
 <div class="tabs-wrap" id="tabs-wrap"><div class="wrap"><div class="tabs" role="tablist" id="tabs"></div></div></div>
 
 <main class="wrap" id="app"></main>
+<section class="progs-sec wide" id="progs-sec" aria-label="Les deux programmes" hidden><h2 class="step-title">Les deux programmes JËF</h2><p class="progs-p">Voici les deux formations, avec leurs deux formules. Je t'ai conseillé celle qui correspond à ton diagnostic, mais tu peux regarder l'autre.</p><div class="progs" id="progs"></div></section>
 
 <footer>
   <div class="wrap">
@@ -1485,10 +1490,11 @@ function renderHeroExtras(){
   const L = state.lang;
   document.getElementById("progs").innerHTML = ["tambali","yokk"].map(k => {
     const P = PROGRAMS[k], d = P[L];
-    return `<article class="pcard" data-tilt><span class="hic pic">${ic(k==="tambali"?"sprout":"trend")}</span><div class="tag">${esc(d.format[0])}</div>
+    const reco = state.res && state.res.key === k;
+    return `<article class="pcard${reco?" reco":""}" data-tilt>${reco?`<span class="reco-tag">Conseillé pour toi</span>`:""}<span class="hic pic">${ic(k==="tambali"?"sprout":"trend")}</span><div class="tag">${esc(d.format[0])}</div>
       <h3>${esc(P.name)}<em>${esc(P.tag)}</em></h3><p>${esc(d.sub)}</p>
       <div class="pfoot"><div class="pprices"><div class="pprice">${fmtN(PRICES[k])} FCFA<small>${esc(t("card_groupe"))}</small></div><div class="pprice">${fmtN(PRICES_PERSO[k])} FCFA<small>${esc(t("card_perso"))}</small></div><small class="pded">${esc(t("from"))}</small></div>
-      <button type="button" class="btn ghost small" data-start="1">${esc(t("prog_see"))} <span class="arr" aria-hidden="true">›</span></button></div></article>`;
+      <button type="button" class="btn ghost small" data-prog="${k}">Voir ce programme <span class="arr" aria-hidden="true">›</span></button></div></article>`;
   }).join("");
 }
 let lastView = "";
@@ -1502,7 +1508,17 @@ function enhance(){
   const tot = app.querySelector(".res-head .total b");
   if (tot && /^\d+$/.test(tot.textContent.trim())) countUp(tot, +tot.textContent.trim(), 1100);
 }
-new MutationObserver(() => { decorate(app); enhance(); }).observe(app, {childList:true});
+function syncProgs(){
+  const sec = document.getElementById("progs-sec"), show = state.tab === "diag" && state.done && !!state.res && state.mode !== "j30";
+  if (show){ renderHeroExtras(); decorate(sec); }
+  sec.hidden = !show;
+}
+new MutationObserver(() => { decorate(app); enhance(); syncProgs(); }).observe(app, {childList:true});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-prog]"); if (!b || !state.res) return;
+  const k = b.dataset.prog; state.showProg = k === state.res.key ? null : k; renderResult();
+  const n = app.querySelector(".prog-name"), blk = n && n.closest(".block"); if (blk) blk.scrollIntoView({behavior: RM ? "auto" : "smooth", block:"start"});
+});
 decorate(app);
 document.getElementById("foot-method").innerHTML = `<span>JËF Communauté</span>` + [["blocks","Construire"],["mega","Montrer"],["bag","Vendre"],["chart","Mesurer"]].map(([i,l]) => `<span>${ic(i)}${l}</span>`).join("");
 function setTopH(){ const tb = document.getElementById("topbar"); if (tb) document.documentElement.style.setProperty("--topbar-h", tb.offsetHeight + "px"); }
