@@ -451,6 +451,13 @@ footer .slogan em{color:var(--gold)}
 .progs-sec .progs{padding-top:18px}
 .pcard.reco{border-color:var(--gold)}
 .pcard .reco-tag{justify-self:start;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#13080A;background:var(--gold);border-radius:99px;padding:4px 10px}
+.fcomp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fcol{border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:6px;align-content:start}
+.fcol.on{border-color:var(--gold);background:rgba(201,164,107,.08)}
+.fcol b{font-size:16px}
+.fcol em{font-style:normal;color:var(--gold-2);font-family:var(--f-display);font-size:22px}
+.fcol ul{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:14.5px;color:var(--cream)}
+@media (max-width:560px){.fcomp{grid-template-columns:1fr}}
 /* Icônes */
 .ico{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
 .hic{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;color:var(--gold);font-size:20px;border:1px solid rgba(201,164,107,.35);background:linear-gradient(160deg,rgba(201,164,107,.16),rgba(201,164,107,.03))}
@@ -612,9 +619,11 @@ fr:{
   price_line:"{x} FCFA par personne",
   lock_title:"Ton diagnostic complet", lock_text:"Ton score détaillé est prêt. Pour le voir, le diagnostic complet coûte 5 000 FCFA. Et si tu t'inscris ensuite à TÀMBALI ou YOKK, je les déduis du prix de la formation.",
   price_deduct:"{x} FCFA au lieu de {y} FCFA : tes 5 000 FCFA de diagnostic sont déduits.",
-  formule_h:"Choisis ta formule", f_groupe:"En groupe", f_perso:"Accompagnement personnel",
-  f_groupe_d:"Les séances en direct avec le groupe, et l'entraide dans le groupe WhatsApp.", f_perso_d:"Le même programme, avec un suivi individuel avec moi, adapté à ton business.",
-  card_groupe:"en groupe", card_perso:"en accompagnement personnel", price_hint:"Avec le diagnostic complet, tes 5 000 FCFA sont déduits de ce prix.",
+  formule_h:"Choisis ta formule", f_groupe:"Programme en groupe", f_perso:"Programme individuel",
+  f_groupe_d:"Les cours en direct avec le groupe, et l'entraide dans le groupe WhatsApp.", f_perso_d:"Le même programme, en tête-à-tête avec moi, adapté à ton business.",
+  fc_groupe:{tambali:["4 jours de 3 h en direct avec le groupe","Les exercices et les questions en groupe","3 semaines d'entraide dans le groupe WhatsApp","Attestation"],yokk:["4 jours de 3 h en direct avec le groupe","Audits de comptes du groupe en direct","30 jours d'entraide dans le groupe WhatsApp, avec 2 lives","Bilan chiffré à J+30 et attestation"]},
+  fc_perso:{tambali:["Les 4 jours en tête-à-tête avec moi, à tes horaires","Chaque exercice fait sur ton business","3 semaines de suivi WhatsApp avec moi","Attestation"],yokk:["Les 4 jours en tête-à-tête avec moi, à tes horaires","L'audit complet de tes comptes","30 jours de suivi WhatsApp avec moi","Bilan chiffré à J+30 et attestation"]},
+  card_groupe:"programme en groupe", card_perso:"programme individuel", price_hint:"Avec le diagnostic complet, tes 5 000 FCFA sont déduits de ce prix.",
   lock_list:["Ton score sur chacun des 4 piliers, et ton point faible","Ton plan d'action, avec les 3 premières choses à faire pour ton activité","L'audit de tes comptes TikTok, Instagram et Facebook","Ton code de suivi, pour voir tes progrès dans 30 jours"],
   unlock_steps:["Paie 5 000 FCFA par Wave ou Orange Money au <b>{n}</b>.","Colle ta référence de transaction, puis envoie-moi le message sur WhatsApp.","Je vérifie et je t'envoie ton code d'accès. Tape-le ici."],
   send_pay:"Envoyer mon paiement", access:"Ton code d'accès", access_ph:"Ex. K7M2QX", unlock:"Débloquer mon diagnostic",
@@ -640,8 +649,8 @@ const PROGRAMS = {
   tambali:{name:"TÀMBALI", tag:"Business Start",
     fr:{sub:"Pour poser les bases et faire tes premières ventes.",
       intro:"TÀMBALI, c'est la formation pour démarrer dans le bon ordre. On regarde d'abord ton business en entier, à 360 degrés. Ensuite on passe le plus de temps sur le digital : comprendre les réseaux et créer des contenus adaptés à ta cliente.",
-      format:["4 séances de 3 h en direct","Google Meet ou Zoom","Support de cours et cahier d'exercices","3 semaines d'accompagnement WhatsApp","Attestation"],
-      sessions:[["Séance 1","Le marketing à 360 degrés","Ta cliente, ton offre, ton prix, son parcours, en ligne et autour de toi."],["Séance 2","Comprendre les réseaux","Comment marchent TikTok, Instagram, Facebook et WhatsApp, et tes comptes prêts à vendre."],["Séance 3","Créer du contenu adapté à ton business","Tes piliers, ta banque d'idées, tes accroches, filmer avec ton téléphone."],["Séance 4","Un contenu pour chaque réseau","Une idée en quatre versions, ton calendrier, des vues aux ventes, tes chiffres."]]}},
+      format:["4 jours de 3 h en direct","Google Meet ou Zoom","Support de cours et cahier d'exercices","3 semaines d'accompagnement WhatsApp","Attestation"],
+      sessions:[["Jour 1","Le marketing à 360 degrés","Ta cliente, ton offre, ton prix, son parcours, en ligne et autour de toi."],["Jour 2","Comprendre les réseaux","Comment marchent TikTok, Instagram, Facebook et WhatsApp, et tes comptes prêts à vendre."],["Jour 3","Créer du contenu adapté à ton business","Tes piliers, ta banque d'idées, tes accroches, filmer avec ton téléphone."],["Jour 4","Un contenu pour chaque réseau","Une idée en quatre versions, ton calendrier, des vues aux ventes, tes chiffres."]]}},
   yokk:{name:"YOKK", tag:"Business Boost",
     fr:{sub:"Pour vendre plus, régulièrement, et faire revenir tes clientes.",
       intro:"YOKK, c'est pour celles et ceux qui vendent déjà et qui veulent passer un cap. On part du diagnostic de ton business, on retravaille ton offre et ton prix, puis on construit ta stratégie sur les trois réseaux et WhatsApp, avec des contenus faits pour être partagés et des chiffres à suivre.",
@@ -1108,7 +1117,7 @@ function buildMessage(kind){
   lines.push(`Prix : ${a.nocalc || !cr ? "pas encore fixé" : `marge ${Math.round(cr.marge)} %, ${fmtN(cr.benef)} FCFA par vente`}`);
   if (kind !== "j30"){ const L = lossCalc(a, s); if (L.total) lines.push(`Argent laissé sur la table : environ ${fmtN(L.total)} FCFA par mois`); }
   if (kind === "paydiag") lines.push(`Paiement diagnostic : ${state.payDiag.moyen}, référence ${state.payDiag.ref.trim()}`);
-  if (kind === "resa") lines.push(`Programme choisi : ${chosen.name}, ${formuleOf() === "perso" ? "accompagnement personnel" : "en groupe"} (${fmtN(dueFor(chosenKey))} FCFA${state.unlocked ? `, diagnostic de ${fmtN(PRICES.diag)} FCFA déduit du prix de ${fmtN(priceOf(chosenKey))} FCFA` : ""})`, `Paiement : ${state.pay.moyen}, référence ${state.pay.ref.trim()}`);
+  if (kind === "resa") lines.push(`Programme choisi : ${chosen.name}, ${formuleOf() === "perso" ? "programme individuel" : "programme en groupe"} (${fmtN(dueFor(chosenKey))} FCFA${state.unlocked ? `, diagnostic de ${fmtN(PRICES.diag)} FCFA déduit du prix de ${fmtN(priceOf(chosenKey))} FCFA` : ""})`, `Paiement : ${state.pay.moyen}, référence ${state.pay.ref.trim()}`);
   lines.push("");
   lines.push({resa:`Je réserve ma place pour ${chosen.name}.`, j30:"Voici mon bilan à 30 jours.", paydiag:"J'ai payé le diagnostic complet (5 000 FCFA). Je voudrais mon code d'accès."}[kind] || "");
   return lines.join("\n");
@@ -1178,6 +1187,7 @@ function renderResult(){
         <p>${esc(PL.intro)}</p>
         <div><b>${esc(t("sessions"))}</b><ul class="sessions" style="margin-top:8px">${PL.sessions.map(x=>`<li><span class="d">${esc(x[0])}</span><div><b>${esc(x[1])}</b><small>${esc(x[2])}</small></div></li>`).join("")}</ul></div>
         <div class="chips">${PL.format.map(f=>`<span class="chip">${esc(f)}</span>`).join("")}</div>
+        <div class="fcomp">${["groupe","perso"].map(f => `<div class="fcol ${formuleOf()===f?"on":""}"><b>${esc(t("f_"+f))}</b><em>${fmtN(priceOf(key,f))} FCFA</em><ul>${t("fc_"+f)[key].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>
         <p class="help"><button type="button" class="linkbtn" id="other">${esc(fill(t("other"),{p:PROGRAMS[other].name}))}</button></p></div>
       <div class="block"><h3>${esc(t("resa_title"))} · ${P.name}</h3>
         <ol class="pay-steps">${t("resa_steps").map(x=>`<li>${fill(x,{n:PAY_NUMBER, prix:fmtN(dueFor(key))})}</li>`).join("")}</ol>
@@ -1233,7 +1243,7 @@ function parseMessage(txt){
   const payF = txt.match(/^Paiement\s*:\s*([^,\n]+),\s*référence\s*(\S+)/im);
   const payD = txt.match(/^Paiement diagnostic\s*:\s*([^,\n]+),\s*référence\s*(\S+)/im);
   return { id: main.id, prenom: get(/Prénom\s*:\s*(.+)/i), activite: get(/Activité\s*:\s*(.+)/i),
-    programme: progOf(chosen) || progOf(reco), choisi: !!chosen, formule: chosen ? (/accompagnement personnel/i.test(chosen) ? "perso" : "groupe") : "",
+    programme: progOf(chosen) || progOf(reco), choisi: !!chosen, formule: chosen ? (/individuel|accompagnement personnel/i.test(chosen) ? "perso" : "groupe") : "",
     code: main.code, scores:{C:main.C,M:main.M,V:main.V,E:main.E},
     reseaux: get(/Réseaux\s*:\s*(.+)/i), prix: get(/Prix\s*:\s*(.+)/i),
     paiement: payF ? {moyen: payF[1].trim(), ref: payF[2].trim()} : null,
@@ -1301,7 +1311,7 @@ function leadHTML(d){
   const mini = ["C","M","V","E"].map((k,i) => `<div>${["Construire","Montrer","Vendre","Mesurer"][i]} <b style="color:var(--ink)">${s[k]}${j?" → "+j[k]:""}</b><div class="track">${j?`<i class="before" style="width:${s[k]*10}%"></i><i style="width:${j[k]*10}%;position:relative"></i>`:`<i style="width:${s[k]*10}%"></i>`}</div></div>`).join("");
   const id = esc(d._id);
   return `<div class="lead st-${d.statut}" data-id="${id}">
-    <div class="lead-top"><div><b>${esc(d.prenom||"Sans prénom")}</b> · ${esc(d.activite||"")}</div><div>${d.programme?`<span class="pill ${d.programme==="YOKK"?"":"T"}">${esc(d.programme)}${d.formule==="perso"?" · personnel":d.formule==="groupe"?" · groupe":""}</span>`:""} <small>${esc((d.updated||d.created||"").slice(0,10))}</small></div></div>
+    <div class="lead-top"><div><b>${esc(d.prenom||"Sans prénom")}</b> · ${esc(d.activite||"")}</div><div>${d.programme?`<span class="pill ${d.programme==="YOKK"?"":"T"}">${esc(d.programme)}${d.formule==="perso"?" · individuel":d.formule==="groupe"?" · groupe":""}</span>`:""} <small>${esc((d.updated||d.created||"").slice(0,10))}</small></div></div>
     <div class="mini">${mini}</div>
     <div class="lead-meta"><div><span>Score</span> ${tot}/40${totJ!==null?` → ${totJ}/40`:""}</div><div><span>Code bilan</span> ${esc(d.code||"")}</div><div><span>Code d'accès</span> <b id="ac-${id}" style="user-select:all;font-family:ui-monospace,Menlo,monospace">${accessCode(d._id)}</b> <button type="button" class="linkbtn" data-copy="ac-${id}">Copier</button><span class="toast" hidden></span></div></div>
     ${d.paiementDiag||d.paiement?`<div class="lead-meta">${d.paiementDiag?`<div><span>Diagnostic</span> ${esc(d.paiementDiag.moyen)}, réf. <b style="user-select:all">${esc(d.paiementDiag.ref)}</b></div>`:""}${d.paiement?`<div><span>Formation</span> ${esc(d.paiement.moyen)}, réf. <b style="user-select:all">${esc(d.paiement.ref)}</b></div>`:""}</div>`:""}
