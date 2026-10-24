@@ -1418,7 +1418,7 @@ function splitWords(html){
 }
 function toApp(){
   const tw = document.getElementById("tabs-wrap"), tb = document.getElementById("topbar");
-  const y = tw.getBoundingClientRect().top + window.scrollY - tb.offsetHeight + 2;
+  const y = app.getBoundingClientRect().top + window.scrollY - tb.offsetHeight - tw.offsetHeight - 6;
   window.scrollTo({top: Math.max(0, y), behavior: RM ? "auto" : "smooth"});
 }
 function countUp(el, to, dur){
@@ -1494,7 +1494,7 @@ function renderHeroExtras(){
     return `<article class="pcard${reco?" reco":""}" data-tilt>${reco?`<span class="reco-tag">Conseillé pour toi</span>`:""}<span class="hic pic">${ic(k==="tambali"?"sprout":"trend")}</span><div class="tag">${esc(d.format[0])}</div>
       <h3>${esc(P.name)}<em>${esc(P.tag)}</em></h3><p>${esc(d.sub)}</p>
       <div class="pfoot"><div class="pprices"><div class="pprice">${fmtN(PRICES[k])} FCFA<small>${esc(t("card_groupe"))}</small></div><div class="pprice">${fmtN(PRICES_PERSO[k])} FCFA<small>${esc(t("card_perso"))}</small></div><small class="pded">${esc(t("from"))}</small></div>
-      <button type="button" class="btn ghost small" data-prog="${k}">Voir ce programme <span class="arr" aria-hidden="true">›</span></button></div></article>`;
+      ${state.done && state.res ? `<button type="button" class="btn ghost small" data-prog="${k}">Voir ce programme <span class="arr" aria-hidden="true">›</span></button>` : `<button type="button" class="btn ghost small" data-start="1">${esc(t("prog_see"))} <span class="arr" aria-hidden="true">›</span></button>`}</div></article>`;
   }).join("");
 }
 let lastView = "";
@@ -1509,11 +1509,13 @@ function enhance(){
   if (tot && /^\d+$/.test(tot.textContent.trim())) countUp(tot, +tot.textContent.trim(), 1100);
 }
 function syncProgs(){
-  const sec = document.getElementById("progs-sec"), show = state.tab === "diag" && state.done && !!state.res && state.mode !== "j30";
+  const sec = document.getElementById("progs-sec"), show = state.tab === "diag" && state.mode !== "j30", after = state.done && !!state.res;
+  const pp = sec.querySelector(".progs-p"); if (pp) pp.textContent = after ? "Voici les deux formations, avec leurs deux formules. Je t'ai conseillé celle qui correspond à ton diagnostic, mais tu peux regarder l'autre." : "Voici mes deux formations. Termine ton diagnostic : je te dirai laquelle est faite pour toi.";
   if (show){ renderHeroExtras(); decorate(sec); }
   sec.hidden = !show;
 }
 new MutationObserver(() => { decorate(app); enhance(); syncProgs(); }).observe(app, {childList:true});
+syncProgs();
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-prog]"); if (!b || !state.res) return;
   const k = b.dataset.prog; state.showProg = k === state.res.key ? null : k; renderResult();
