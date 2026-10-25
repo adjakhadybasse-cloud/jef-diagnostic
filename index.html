@@ -458,6 +458,8 @@ footer .slogan em{color:var(--gold)}
 .fcol em{font-style:normal;color:var(--gold-2);font-family:var(--f-display);font-size:22px}
 .fcol ul{margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:14.5px;color:var(--cream)}
 @media (max-width:560px){.fcomp{grid-template-columns:1fr}}
+.launch{display:inline-block;vertical-align:middle;font-family:var(--f-body);font-style:normal;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:4px 10px;margin-left:6px}
+.pprices .launch{margin:0 0 6px;justify-self:start}
 /* Icônes */
 .ico{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
 .hic{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;color:var(--gold);font-size:20px;border:1px solid rgba(201,164,107,.35);background:linear-gradient(160deg,rgba(201,164,107,.16),rgba(201,164,107,.03))}
@@ -616,9 +618,9 @@ fr:{
   send_title:"On en parle sur WhatsApp", send_text:"Ton message est prêt avec ton score. Envoie-le moi et je te donne la date de la prochaine session et le prix.",
   send_diag:"Envoyer mon diagnostic", copy_msg:"Copier le message",
   resa_title:"Réserver ma place", resa_steps:["Écris-moi sur WhatsApp pour avoir la date de la prochaine session.","Paie <b>{prix} FCFA</b> par Wave ou Orange Money au <b>{n}</b>.","Colle ta référence de transaction ici, puis envoie-moi ta réservation."],
-  price_line:"{x} FCFA par personne",
+  price_line:"{x} FCFA par personne, prix de lancement",
   lock_title:"Ton diagnostic complet", lock_text:"Ton score détaillé est prêt. Pour le voir, le diagnostic complet coûte 5 000 FCFA. Et si tu t'inscris ensuite à TÀMBALI ou YOKK, je les déduis du prix de la formation.",
-  price_deduct:"{x} FCFA au lieu de {y} FCFA : tes 5 000 FCFA de diagnostic sont déduits.",
+  price_deduct:"{x} FCFA au lieu de {y} FCFA (prix de lancement) : tes 5 000 FCFA de diagnostic sont déduits.",
   formule_h:"Choisis ta formule", f_groupe:"Programme en groupe", f_perso:"Programme individuel",
   f_groupe_d:"Les cours en direct avec le groupe, et l'entraide dans le groupe WhatsApp.", f_perso_d:"Le même programme, en tête-à-tête avec moi, adapté à ton business.",
   fc_groupe:{tambali:["4 jours de 3 h en direct avec le groupe","Les exercices et les questions en groupe","3 semaines d'entraide dans le groupe WhatsApp","Attestation"],yokk:["5 jours de 3 h en direct avec le groupe","Audits de comptes du groupe en direct","30 jours d'entraide dans le groupe WhatsApp, avec 2 lives","Bilan chiffré à J+30 et attestation"]},
@@ -1181,7 +1183,7 @@ function renderResult(){
     const reasons = key === state.res.key ? reasonsFor(a, s, key) : [];
     html += `<div class="block"><h3>${esc(t("prog_title"))}</h3>
         <div><p class="prog-name">${P.name}</p><p class="help" style="font-size:15px">${P.tag}. ${esc(PL.sub)}</p></div>
-        <fieldset class="q formules"><legend>${esc(t("formule_h"))}</legend><div class="fopts">${["groupe","perso"].map(f => `<label class="fopt"><input type="radio" name="formule" value="${f}" ${formuleOf()===f?"checked":""}><span><b>${esc(t("f_"+f))}</b><em>${fmtN(priceOf(key,f))} FCFA</em><small>${esc(t("f_"+f+"_d"))}</small></span></label>`).join("")}</div></fieldset>
+        <fieldset class="q formules"><legend>${esc(t("formule_h"))} <span class="launch">Prix de lancement</span></legend><div class="fopts">${["groupe","perso"].map(f => `<label class="fopt"><input type="radio" name="formule" value="${f}" ${formuleOf()===f?"checked":""}><span><b>${esc(t("f_"+f))}</b><em>${fmtN(priceOf(key,f))} FCFA</em><small>${esc(t("f_"+f+"_d"))}</small></span></label>`).join("")}</div></fieldset>
         <p class="price">${esc(state.unlocked ? fill(t("price_deduct"),{x:fmtN(dueFor(key)), y:fmtN(priceOf(key))}) : fill(t("price_line"),{x:fmtN(priceOf(key))}))}</p>${state.unlocked ? "" : `<p class="help">${esc(t("price_hint"))}</p>`}
         ${reasons.length?`<div class="why"><b>${esc(fill(t("why"),{p:P.name}))}</b><ul class="clean">${reasons.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}
         <p>${esc(PL.intro)}</p>
@@ -1503,7 +1505,7 @@ function renderHeroExtras(){
     const reco = state.res && state.res.key === k;
     return `<article class="pcard${reco?" reco":""}" data-tilt>${reco?`<span class="reco-tag">Conseillé pour toi</span>`:""}<span class="hic pic">${ic(k==="tambali"?"sprout":"trend")}</span><div class="tag">${esc(d.format[0])}</div>
       <h3>${esc(P.name)}<em>${esc(P.tag)}</em></h3><p>${esc(d.sub)}</p>
-      <div class="pfoot"><div class="pprices"><div class="pprice">${fmtN(PRICES[k])} FCFA<small>${esc(t("card_groupe"))}</small></div><div class="pprice">${fmtN(PRICES_PERSO[k])} FCFA<small>${esc(t("card_perso"))}</small></div><small class="pded">${esc(t("from"))}</small></div>
+      <div class="pfoot"><div class="pprices"><span class="launch">Prix de lancement</span><div class="pprice">${fmtN(PRICES[k])} FCFA<small>${esc(t("card_groupe"))}</small></div><div class="pprice">${fmtN(PRICES_PERSO[k])} FCFA<small>${esc(t("card_perso"))}</small></div><small class="pded">${esc(t("from"))}</small></div>
       ${state.done && state.res ? `<button type="button" class="btn ghost small" data-prog="${k}">Voir ce programme <span class="arr" aria-hidden="true">›</span></button>` : `<button type="button" class="btn ghost small" data-start="1">${esc(t("prog_see"))} <span class="arr" aria-hidden="true">›</span></button>`}</div></article>`;
   }).join("");
 }
