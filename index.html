@@ -509,6 +509,17 @@ h2.has-ic .hic{width:50px;height:50px;font-size:25px;border-radius:14px}
 .pcard.reco{border-color:#7A1F2E;box-shadow:0 0 0 2px rgba(122,31,46,.25)}
 @media (max-width:560px){#app{border-radius:20px}}
 
+.pchoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.pchoice{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:10px;align-content:start;padding:22px;border-radius:18px;background:#FFFFFF;border:1.5px solid #E6D6BF;color:#2A1A1D;transition:border-color .2s,transform .2s,box-shadow .2s}
+.pchoice:hover{border-color:#7A1F2E;transform:translateY(-2px);box-shadow:0 18px 40px -24px rgba(78,17,28,.5)}
+.pchoice:focus-visible{outline:3px solid #C9A46B;outline-offset:2px}
+.pchoice b{font-family:var(--f-display);font-weight:600;font-size:26px;line-height:1.1;color:#4E111C}
+.pchoice .pc-p{font-size:15px;line-height:1.5;color:#4A3A3C}
+.pchoice .pc-tag{justify-self:start;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#FFFFFF;background:#7A1F2E;border-radius:99px;padding:4px 10px}
+.pchoice[data-parcours="diag"] .pc-tag{background:#F3E7D6;color:#7A1F2E}
+.pchoice .pc-go{font-weight:700;color:#7A1F2E;margin-top:4px}
+@media (max-width:620px){.pchoices{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -984,8 +995,17 @@ function calcOut(c){
 }
 
 /* ---------- Onglet diagnostic ---------- */
+function renderChoice(){
+  const opt = (v, ico, h, p, tag) => `<button type="button" class="pchoice" data-parcours="${v}"><span class="hic">${ic(ico)}</span><span class="pc-tag">${tag}</span><b>${h}</b><span class="pc-p">${p}</span><span class="pc-go">Choisir <span class="arr" aria-hidden="true">›</span></span></button>`;
+  app.innerHTML = `<div class="res"><div><h2 class="step-title">Par où tu commences ?</h2><p style="margin-top:8px;max-width:60ch">Choisis ton parcours. Dans les deux cas, tu réponds ensuite aux questions du diagnostic : c'est ce qui me permet d'analyser ton business.</p></div>
+    <div class="pchoices">
+      ${opt("membre","flag","Je réserve ma formation","Tu paies l'acompte de TÀMBALI ou YOKK. Ton diagnostic complet est inclus, avec ton suivi à 30 jours. Première session le samedi 14 novembre.","Diagnostic inclus")}
+      ${opt("diag","target","Je fais seulement le diagnostic","Tu réponds aux questions et ton score global est offert. Le diagnostic complet, avec ton plan d'action et l'audit de tes réseaux, coûte 10 000 FCFA.","10 000 FCFA")}
+    </div></div>`;
+}
 function renderDiag(){
   if (state.done) return renderResult();
+  if (state.mode === "diag" && !state.parcours) return renderChoice();
   const st = state.step, a = state.a, E = state.errors;
   let body = "";
   if (st === 1){
@@ -1011,7 +1031,7 @@ function renderDiag(){
       + qRadio("conv") + qRadio("retour") + qRadio("suivi") + qRadio("source") + qRadio("strat");
   }
   app.innerHTML = `
-    ${state.mode==="j30" ? `<p class="note"><strong>${esc(fill(t("bilan_mode"),{c:state.prevCode.code}))}</strong></p>` : (st===1?`<p class="note">${t("note")}</p>`:"")}
+    ${state.mode==="j30" ? `<p class="note"><strong>${esc(fill(t("bilan_mode"),{c:state.prevCode.code}))}</strong></p>` : (st===1?`<p class="note">${t("note")}</p><p class="help" style="margin:-10px 0 18px">Ton parcours : <b>${state.parcours === "membre" ? "je réserve ma formation, diagnostic inclus" : "diagnostic seul"}</b> · <button type="button" class="linkbtn" id="chg-parcours">changer</button></p>`:"")}
     <div class="stepper"><div class="count">${esc(fill(t("step_count"),{n:st}))}</div><div class="bar">${[1,2,3,4,5].map(i=>`<i class="${i<=st?"on":""}"></i>`).join("")}</div><h2 class="step-title">${esc(t("steps")[st-1])}</h2></div>
     <form id="stepform" class="qs" novalidate>${body}
       <div class="nav">${st>1?`<button type="button" class="btn ghost" id="prev">${esc(t("prev"))}</button>`:""}<button type="submit" class="btn">${esc(st<5?t("next"):t("see"))}</button></div>
@@ -1444,13 +1464,15 @@ app.addEventListener("submit", e => {
 });
 app.addEventListener("click", e => {
   const b = e.target.closest("button, a"); if (!b) return;
+  if (b.dataset.parcours){ state.parcours = b.dataset.parcours; state.payDiag.type = state.parcours === "membre" ? "acompte" : "diag"; store.set("jef_parcours", state.parcours); renderDiag(); toApp(); return; }
+  if (b.id === "chg-parcours"){ state.parcours = null; store.set("jef_parcours", null); renderDiag(); return; }
   if (b.id === "prev"){ state.step--; state.errors = {}; renderDiag(); return; }
   if (b.id === "redo" || b.id === "redo2"){ state.done = false; state.step = 1; renderDiag(); toApp(); return; }
   if (b.id === "other"){ const cur = state.showProg || state.res.key; state.showProg = cur === "tambali" ? "yokk" : "tambali"; if (state.showProg === state.res.key) state.showProg = null; renderResult(); document.getElementById("other").scrollIntoView({block:"center"}); return; }
   if (b.dataset.copy){ copyFrom(b.dataset.copy, b); return; }
   if (b.dataset.goto){ state.tab = b.dataset.goto; if (state.mode === "j30"){ state.mode = "diag"; restoreDiag(); } render(); return; }
   if (b.dataset.need){ const pf = b.dataset.need; document.getElementById(pf+"-err").hidden = false; document.getElementById(pf+"-ref").focus(); return; }
-  if (b.id === "newdiag"){ store.set("jef_diag", null); location.hash = ""; state.res = null; state.unlocked = false; state.done = false; state.step = 1; state.mode = "diag";
+  if (b.id === "newdiag"){ store.set("jef_diag", null); store.set("jef_parcours", null); state.parcours = null; location.hash = ""; state.res = null; state.unlocked = false; state.done = false; state.step = 1; state.mode = "diag";
     state.a = {prenom:"",activite:"",stade:null,objectif:null,ventes:null,cliente:null,diff:null,calc:{cout:"",emb:"",liv:"",autres:"",pv:"",mois:""},nocalc:false,nets:{TikTok:{on:false,handle:"",c:[]},Instagram:{on:false,handle:"",c:[]},Facebook:{on:false,handle:"",c:[]}},wa:null,conv:null,suivi:null,source:null,strat:null};
     renderDiag(); return; }
   if (b.id === "add"){ addFromPaste(); return; }
@@ -1605,6 +1627,7 @@ function restoreDiag(){
   if (saved && saved.res && saved.a){ state.a = saved.a; state.res = saved.res; state.unlocked = !!saved.unlocked; state.member = !!saved.member; state.done = true; }
   else { state.done = false; state.step = 1; }
 }
+state.parcours = store.get("jef_parcours") || null; if (state.parcours) state.payDiag.type = state.parcours === "membre" ? "acompte" : "diag";
 restoreDiag();
 render();
 /* Version publique : l'espace « Mes inscrites » reste sur la version Claude de la consultante. */
