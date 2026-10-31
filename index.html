@@ -656,7 +656,7 @@ fr:{
   fc_groupe:{tambali:["4 jours de 3 h avec le groupe","Les exercices et les questions en groupe","3 semaines d'entraide dans le groupe WhatsApp"],yokk:["4 jours de 3 h avec le groupe","Audits de comptes du groupe","30 jours d'entraide dans le groupe WhatsApp, avec 2 lives","Bilan chiffré à J+30"]},
   fc_perso:{tambali:["Les 4 jours en tête-à-tête avec moi, à tes horaires","Chaque exercice fait sur ton business","3 semaines de suivi WhatsApp avec moi"],yokk:["Les 4 jours en tête-à-tête avec moi, à tes horaires","L'audit complet de tes comptes","30 jours de suivi WhatsApp avec moi","Bilan chiffré à J+30"]},
   card_groupe:"la formation complète, en groupe", card_perso:"programme individuel", price_hint:"Dès que tu paies ton acompte, ton diagnostic complet est inclus.",
-  lock_list:["Ton score sur chacun des 4 piliers, et ton point faible","Ton plan d'action, avec les 3 premières choses à faire pour ton activité","L'audit de tes comptes TikTok, Instagram et Facebook","Pour les inscrites seulement : ton code de suivi, pour voir tes progrès dans 30 jours"],
+  lock_list:["Ton score sur chacun des 4 piliers, et ton point faible","Ton plan d'action, avec les 3 premières choses à faire pour ton activité","L'audit de tes comptes TikTok, Instagram et Facebook"],
   unlock_steps:["Inscrite : paie ton acompte de formation. Diagnostic seul : paie 10 000 FCFA. Par Wave ou Orange Money au <b>{n}</b>.","Colle ta référence de transaction, puis envoie-moi le message sur WhatsApp.","Je vérifie et je t'envoie ton code d'accès. Tape-le ici."],
   pdtype_h:"Quel paiement ?", pdtype_diag:"Diagnostic seul, 10 000 FCFA", pdtype_acompte:"Acompte de ma formation (diagnostic inclus)",
   send_pay:"Envoyer mon paiement", access:"Ton code d'accès", access_ph:"Ex. K7M2QX", unlock:"Débloquer mon diagnostic",
@@ -1196,7 +1196,7 @@ function renderResult(){
   } else if (open){
     html += `<div class="block"><h3>${esc(t("score_title"))}</h3><p class="help">${esc(t("score_sub"))}</p>${pillarsHTML(s)}</div>
       <div class="block"><h3>${esc(fill(t("focus"),{a:a.activite.trim()}))}</h3>${focusList}</div>${prix}${nets}
-      ${state.member ? `<div class="block"><h3>${esc(t("code_title"))}</h3><p>${esc(t("code_text"))}</p><div class="code"><output id="code-out">${state.res.code}</output><button type="button" class="btn ghost small" data-copy="code-out">${esc(t("copy"))}</button><span class="toast" hidden></span></div></div>` : `<div class="block"><h3>${esc(t("follow_h"))}</h3><p>${esc(t("follow_p"))}</p></div>`}`;
+      ${state.member ? `<div class="block"><h3>${esc(t("code_title"))}</h3><p>${esc(t("code_text"))}</p><div class="code"><output id="code-out">${state.res.code}</output><button type="button" class="btn ghost small" data-copy="code-out">${esc(t("copy"))}</button><span class="toast" hidden></span></div></div>` : ""}`;
   } else {
     html += `<div class="block lockblock"><h3>${esc(t("lock_title"))}</h3><p>${esc(t("lock_text"))}</p>
         <div class="lockwrap">${lockedPillars()}<div class="lockbadge">Inclus pour les inscrites</div></div>
