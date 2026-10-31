@@ -479,6 +479,36 @@ h2.has-ic .hic{width:50px;height:50px;font-size:25px;border-radius:14px}
 .foot-method span{display:inline-flex;align-items:center;gap:6px}
 .foot-method .ico{color:var(--gold);font-size:16px}
 
+/* Sections claires sur le fond nuit (31 oct.) : le fond reste sombre, le contenu passe sur un panneau beige */
+#app{--ink:#2A1A1D;--cream:#2A1A1D;--muted:#6E5A5C;--card:#FFFFFF;--line:#E6D6BF;--night-2:#FBF6EE;--bordeaux:#7A1F2E;--beige:#F3E7D6;--beige-light:#FAF3E8;--beige-dark:#A88761;--track:#EBDFCD;--error:#B3261E;--ok:#2E7D4F;--warn:#8A5A00;--gold-2:#8E6B36;--sel-bg:#7A1F2E;--sel-fg:#FFFFFF;color-scheme:light;
+  background:#F6EEE2;color:var(--ink);border-radius:26px;padding-block:30px 40px;margin-bottom:56px;box-shadow:0 40px 90px -40px rgba(0,0,0,.7);border:1px solid rgba(201,164,107,.35)}
+#app .step-title,#app .prog-name{color:#4E111C}
+#app .block h3,#app .tip h3{color:#4E111C}
+#app .note{background:#FFFFFF;border-left-color:#C9A46B}
+#app .block:hover{border-color:#C9A46B}
+#app .loss{background:radial-gradient(600px circle at 100% 0%,rgba(201,164,107,.18),transparent 55%),#FFFFFF}
+#app .loss-year{color:#4E111C}
+#app .hic{background:linear-gradient(160deg,rgba(201,164,107,.22),rgba(201,164,107,.06));border-color:rgba(168,135,97,.45);color:#9C7A45}
+#app .stepper .bar i{background:#E6D6BF}
+#app .stepper .bar i.on{background:#7A1F2E}
+#app .track i{background:linear-gradient(90deg,#7A1F2E,#C9A46B)}
+#app .btn.ghost{background:#FFFFFF;color:#4E111C;border-color:#D9C6AA}
+#app .btn.ghost:hover{border-color:#7A1F2E;color:#7A1F2E}
+#app .tabs button{color:var(--muted)}
+/* bandeau de résultat et carte à partager : restent bordeaux, texte clair */
+#app .res-head,#app .scard{--cream:#F6EEE2;--ink:#F6EEE2;--muted:#D8C3B8;--gold-2:#E2C493;color:#F6EEE2}
+#app .res-head .hic{color:#E2C493;border-color:rgba(201,164,107,.45);background:rgba(201,164,107,.12)}
+/* cartes des programmes : claires */
+.pcard{--cream:#2A1A1D;--muted:#6E5A5C;--gold-2:#8E6B36;background:linear-gradient(160deg,#FFFFFF 0%,#F6EEE2 75%);border-color:rgba(201,164,107,.45)}
+.pcard h3{color:#4E111C}
+.pcard .tag,.pcard .pded{color:#9C7A45}
+.pcard .launch{color:#9C7A45;border-color:#C9A46B}
+.pcard::after{background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(201,164,107,.25),transparent 45%)}
+.pcard .hic{color:#9C7A45;border-color:rgba(168,135,97,.45);background:rgba(201,164,107,.14)}
+.pcard .btn.ghost{background:#FFFFFF;color:#4E111C;border-color:#D9C6AA}
+.pcard.reco{border-color:#7A1F2E;box-shadow:0 0 0 2px rgba(122,31,46,.25)}
+@media (max-width:560px){#app{border-radius:20px}}
+
 </style>
 </head>
 <body>
