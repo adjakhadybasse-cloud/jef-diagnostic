@@ -644,7 +644,7 @@ fr:{
   prix_title:"Ton prix", prix_none:"Tu n'as pas encore de prix. On le calcule ensemble pendant la formation, avant de poster quoi que ce soit.",
   nets_title:"Tes réseaux", nets_absent:"Pas encore présente", nets_wa:"WhatsApp",
   prog_title:"Le programme qui te correspond", why:"Pourquoi je te recommande {p}", focus:"Pour {a}, on commencera par", sessions:"Le programme",
-  code_title:"Ton code bilan", code_text:"Garde ce code. Dans 30 jours, refais le diagnostic dans l'onglet Bilan J+30 et tu verras ce qui a bougé.", copy:"Copier", copied:"Copié", selected:"Texte sélectionné, copie-le avec ton téléphone",
+  code_title:"Ton code bilan", code_text:"Garde ce code et ton code d'accès membre. Dans 30 jours, refais le diagnostic dans l'onglet Bilan J+30 et tu verras ce qui a bougé.", follow_h:"Ton suivi à 30 jours", follow_p:"Le bilan à 30 jours est réservé aux inscrites de TÀMBALI et YOKK. Réserve ta place avec ton acompte : je t'envoie ton code membre, et on mesure ensemble tes progrès.", copy:"Copier", copied:"Copié", selected:"Texte sélectionné, copie-le avec ton téléphone",
   send_title:"On en parle sur WhatsApp", send_text:"Ton message est prêt avec ton score. Envoie-le moi et je te donne la date de la prochaine session et le prix.",
   send_diag:"Envoyer mon diagnostic", copy_msg:"Copier le message",
   resa_title:"Réserver ma place", resa_steps:["La prochaine session commence le samedi 14 novembre.","Paie ton acompte, ou la totalité (<b>{prix} FCFA</b>), par Wave ou Orange Money au <b>{n}</b>.","Colle ta référence de transaction ici, puis envoie-moi ta réservation. Avec cette référence, je t'envoie aussi le code de ton diagnostic complet, inclus dans ta formation."],
@@ -656,7 +656,7 @@ fr:{
   fc_groupe:{tambali:["4 jours de 3 h avec le groupe","Les exercices et les questions en groupe","3 semaines d'entraide dans le groupe WhatsApp"],yokk:["4 jours de 3 h avec le groupe","Audits de comptes du groupe","30 jours d'entraide dans le groupe WhatsApp, avec 2 lives","Bilan chiffré à J+30"]},
   fc_perso:{tambali:["Les 4 jours en tête-à-tête avec moi, à tes horaires","Chaque exercice fait sur ton business","3 semaines de suivi WhatsApp avec moi"],yokk:["Les 4 jours en tête-à-tête avec moi, à tes horaires","L'audit complet de tes comptes","30 jours de suivi WhatsApp avec moi","Bilan chiffré à J+30"]},
   card_groupe:"la formation complète, en groupe", card_perso:"programme individuel", price_hint:"Dès que tu paies ton acompte, ton diagnostic complet est inclus.",
-  lock_list:["Ton score sur chacun des 4 piliers, et ton point faible","Ton plan d'action, avec les 3 premières choses à faire pour ton activité","L'audit de tes comptes TikTok, Instagram et Facebook","Ton code de suivi, pour voir tes progrès dans 30 jours"],
+  lock_list:["Ton score sur chacun des 4 piliers, et ton point faible","Ton plan d'action, avec les 3 premières choses à faire pour ton activité","L'audit de tes comptes TikTok, Instagram et Facebook","Pour les inscrites seulement : ton code de suivi, pour voir tes progrès dans 30 jours"],
   unlock_steps:["Inscrite : paie ton acompte de formation. Diagnostic seul : paie 10 000 FCFA. Par Wave ou Orange Money au <b>{n}</b>.","Colle ta référence de transaction, puis envoie-moi le message sur WhatsApp.","Je vérifie et je t'envoie ton code d'accès. Tape-le ici."],
   pdtype_h:"Quel paiement ?", pdtype_diag:"Diagnostic seul, 10 000 FCFA", pdtype_acompte:"Acompte de ma formation (diagnostic inclus)",
   send_pay:"Envoyer mon paiement", access:"Ton code d'accès", access_ph:"Ex. K7M2QX", unlock:"Débloquer mon diagnostic",
@@ -671,7 +671,7 @@ fr:{
   num_line:"Numéro JËF : {n}",
   other:"Voir aussi {p}", redo:"Modifier mes réponses", sign:"À très vite. JËF Communauté",
   prix_h:"Combien te rapporte vraiment une vente ?", prix_p:"Beaucoup vendent au feeling et travaillent presque à perte sans le savoir. Fais le calcul, ça prend une minute.", prix_cta:"Faire mon diagnostic complet",
-  bilan_h:"Ton bilan J+30", bilan_p:"Tu as suivi une formation JËF ? Trente jours après, refais le diagnostic avec ton code. Tu verras ce qui a bougé, pilier par pilier.",
+  bilan_h:"Ton bilan J+30", bilan_p:"Réservé aux inscrites de TÀMBALI et YOKK. Trente jours après ta formation, entre ton code bilan et ton code membre, puis refais le diagnostic. Tu verras ce qui a bougé, pilier par pilier.", bilan_member:"Ton code membre", bilan_member_ph:"Ex. K7M2QX", e_member:"Ce code membre ne correspond pas. Il t'a été envoyé sur WhatsApp quand tu as réservé ta place.",
   bilan_code:"Ton code bilan", bilan_ph:"JEF-XXXX-XXXX", e_code:"Ce code ne ressemble pas à un code JËF. Il commence par JEF- et se trouve sur ton premier résultat.", bilan_start:"Commencer mon bilan",
   bilan_mode:"Bilan J+30, avec le code {c}",
   before:"Avant", after:"Aujourd'hui", gain:"{x} points gagnés", gain_none:"Même score qu'il y a 30 jours",
@@ -1118,7 +1118,8 @@ function accessCode(id){
   for (let i = 0; i < 6; i++){ const v = i < 3 ? a : b; out += AL[(v >>> (i % 3) * 5) & 31]; }
   return out;
 }
-function saveDiag(){ if (state.mode !== "j30" && state.res) store.set("jef_diag", {a: state.a, res: state.res, unlocked: state.unlocked}); }
+const memberCode = id => accessCode(String(id) + "-membre");
+function saveDiag(){ if (state.mode !== "j30" && state.res) store.set("jef_diag", {a: state.a, res: state.res, unlocked: state.unlocked, member: !!state.member}); }
 
 function pillarsHTML(s, before){
   const P = t("P"), keys = ["C","M","V","E"];
@@ -1195,7 +1196,7 @@ function renderResult(){
   } else if (open){
     html += `<div class="block"><h3>${esc(t("score_title"))}</h3><p class="help">${esc(t("score_sub"))}</p>${pillarsHTML(s)}</div>
       <div class="block"><h3>${esc(fill(t("focus"),{a:a.activite.trim()}))}</h3>${focusList}</div>${prix}${nets}
-      <div class="block"><h3>${esc(t("code_title"))}</h3><p>${esc(t("code_text"))}</p><div class="code"><output id="code-out">${state.res.code}</output><button type="button" class="btn ghost small" data-copy="code-out">${esc(t("copy"))}</button><span class="toast" hidden></span></div></div>`;
+      ${state.member ? `<div class="block"><h3>${esc(t("code_title"))}</h3><p>${esc(t("code_text"))}</p><div class="code"><output id="code-out">${state.res.code}</output><button type="button" class="btn ghost small" data-copy="code-out">${esc(t("copy"))}</button><span class="toast" hidden></span></div></div>` : `<div class="block"><h3>${esc(t("follow_h"))}</h3><p>${esc(t("follow_p"))}</p></div>`}`;
   } else {
     html += `<div class="block lockblock"><h3>${esc(t("lock_title"))}</h3><p>${esc(t("lock_text"))}</p>
         <div class="lockwrap">${lockedPillars()}<div class="lockbadge">Inclus pour les inscrites</div></div>
@@ -1254,11 +1255,15 @@ function renderPrixTab(){
 /* ---------- Onglet bilan ---------- */
 function renderBilanTab(){
   const last = store.get("jef_last");
-  const val = state.bilanInput ?? (last && last.code) ?? "";
+  const mem = store.get("jef_member");
+  const val = state.bilanInput ?? (last && last.code) ?? (mem && mem.code) ?? "";
   app.innerHTML = `<div class="res"><div><h2 class="step-title">${esc(t("bilan_h"))}</h2><p style="margin-top:8px;max-width:60ch">${esc(t("bilan_p"))}</p></div>
     <form class="block" id="bilanform" novalidate><div class="q"><label class="label" for="bilancode">${esc(t("bilan_code"))}</label>
       <input type="text" id="bilancode" value="${esc(val)}" placeholder="${esc(t("bilan_ph"))}" autocomplete="off" style="font-family:ui-monospace,Menlo,monospace;text-transform:uppercase">
       ${state.errors.code?`<p class="err">${esc(t("e_code"))}</p>`:""}</div>
+      <div class="q"><label class="label" for="membercode">${esc(t("bilan_member"))}</label>
+      <input type="text" id="membercode" value="${esc(state.memberInput ?? (mem && mem.ac) ?? "")}" placeholder="${esc(t("bilan_member_ph"))}" autocomplete="off" style="max-width:200px;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase">
+      ${state.errors.member?`<p class="err">${esc(t("e_member"))}</p>`:""}</div>
       <div><button type="submit" class="btn">${esc(t("bilan_start"))}</button></div></form></div>`;
 }
 
@@ -1311,7 +1316,7 @@ async function addFromPaste(){
     ta.value = "";
     let txt = p.j30 ? `Bilan J+30 ajouté à la fiche de ${doc.prenom || "cette personne"}.` : old ? `Fiche de ${doc.prenom} mise à jour.` : `Fiche de ${doc.prenom} ajoutée.`;
     if (p.paiementDiag) txt += ` Vérifie la référence ${p.paiementDiag.ref}, puis envoie-lui le code d'accès ${accessCode(p.id)}.`;
-    else if (p.paiement) txt += ` Vérifie la référence ${p.paiement.ref}. Son diagnostic complet est inclus : envoie-lui le code d'accès ${accessCode(p.id)}.`;
+    else if (p.paiement) txt += ` Vérifie la référence ${p.paiement.ref}. Son diagnostic complet et son suivi à 30 jours sont inclus : envoie-lui son code membre ${memberCode(p.id)}.`;
     say(txt, true);
   } catch(e){ say("L'enregistrement a échoué. Réessaie dans un instant.", false); }
 }
@@ -1327,8 +1332,10 @@ function renderAdmin(){
     <div><h2 class="step-title">Mes inscrites</h2><p style="margin-top:8px;max-width:62ch">Toi seule vois cet onglet. Quand quelqu'un t'envoie un message JËF sur WhatsApp (diagnostic, paiement du diagnostic, réservation ou bilan J+30), colle-le ici. La fiche se crée ou se met à jour toute seule.</p></div>
     <div class="block"><div class="q"><label class="label" for="paste">Message reçu sur WhatsApp</label><textarea id="paste" placeholder="JËF · Paiement diagnostic&#10;Prénom : …"></textarea></div>
       <div class="btnrow"><button type="button" class="btn" id="add">Ajouter la fiche</button><span id="paste-msg" class="${state.adminMsg&&state.adminMsg.ok?"toast":"err"}" ${state.adminMsg?"":"hidden"}>${esc(state.adminMsg?state.adminMsg.txt:"")}</span></div></div>
-    <div class="block"><h3>Code d'accès au diagnostic</h3><p class="help">Après avoir vérifié le paiement (l'acompte d'une inscrite, ou 10 000 FCFA pour un diagnostic seul), envoie ce code à la personne. Il ne marche que pour son diagnostic. Tu peux aussi le retrouver sur chaque fiche.</p>
-      <div class="btnrow"><input type="text" id="gencode" value="${esc(state.genCode||"")}" placeholder="Code bilan, ex. JEF-AB3K-7X20" style="max-width:320px;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase"><output id="gen-out" class="codeout">${gen?accessCode(gen.id):"······"}</output>${gen?`<button type="button" class="btn ghost small" data-copy="gen-out">Copier</button><span class="toast" hidden></span>`:""}</div></div>
+    <div class="block"><h3>Codes d'accès au diagnostic</h3><p class="help">Après avoir vérifié le paiement, envoie le bon code. Code membre pour une inscrite (acompte reçu) : il débloque le diagnostic complet et le bilan à 30 jours. Code diagnostic seul pour 10 000 FCFA : il débloque le diagnostic, sans le suivi. Tu les retrouves aussi sur chaque fiche.</p>
+      <div class="btnrow"><input type="text" id="gencode" value="${esc(state.genCode||"")}" placeholder="Code bilan, ex. JEF-AB3K-7X20" style="max-width:320px;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase"><output id="gen-out" class="codeout" title="Diagnostic seul">${gen?accessCode(gen.id):"······"}</output>${gen?`<button type="button" class="btn ghost small" data-copy="gen-out">Copier</button><span class="toast" hidden></span>`:""}</div>
+      <div class="btnrow" style="margin-top:8px"><span class="help" style="min-width:150px">Code membre</span><output id="gen-mem" class="codeout">${gen?memberCode(gen.id):"······"}</output>${gen?`<button type="button" class="btn ghost small" data-copy="gen-mem">Copier</button><span class="toast" hidden></span>`:""}</div>
+      <p class="help" style="margin-top:6px">Le premier code (à côté du champ) est celui du diagnostic seul.</p></div>
     ${state.db ? "" : `<p class="note">L'enregistrement des fiches n'est pas disponible dans cette vue.</p>`}
     <div class="stats">
       <div class="stat"><small>Fiches</small><b>${L.length}</b></div>
@@ -1348,7 +1355,7 @@ function leadHTML(d){
   return `<div class="lead st-${d.statut}" data-id="${id}">
     <div class="lead-top"><div><b>${esc(d.prenom||"Sans prénom")}</b> · ${esc(d.activite||"")}</div><div>${d.programme?`<span class="pill ${d.programme==="YOKK"?"":"T"}">${esc(d.programme)}${d.formule==="perso"?" · individuel":d.formule==="groupe"?" · groupe":""}</span>`:""} <small>${esc((d.updated||d.created||"").slice(0,10))}</small></div></div>
     <div class="mini">${mini}</div>
-    <div class="lead-meta"><div><span>Score</span> ${tot}/40${totJ!==null?` → ${totJ}/40`:""}</div><div><span>Code bilan</span> ${esc(d.code||"")}</div><div><span>Code d'accès</span> <b id="ac-${id}" style="user-select:all;font-family:ui-monospace,Menlo,monospace">${accessCode(d._id)}</b> <button type="button" class="linkbtn" data-copy="ac-${id}">Copier</button><span class="toast" hidden></span></div></div>
+    <div class="lead-meta"><div><span>Score</span> ${tot}/40${totJ!==null?` → ${totJ}/40`:""}</div><div><span>Code bilan</span> ${esc(d.code||"")}</div><div><span>Code diagnostic seul</span> <b id="ac-${id}" style="user-select:all;font-family:ui-monospace,Menlo,monospace">${accessCode(d._id)}</b> <button type="button" class="linkbtn" data-copy="ac-${id}">Copier</button><span class="toast" hidden></span></div><div><span>Code membre</span> <b id="mc-${id}" style="user-select:all;font-family:ui-monospace,Menlo,monospace">${memberCode(d._id)}</b> <button type="button" class="linkbtn" data-copy="mc-${id}">Copier</button><span class="toast" hidden></span></div></div>
     ${d.paiementDiag||d.paiement?`<div class="lead-meta">${d.paiementDiag?`<div><span>Diagnostic</span> ${esc(d.paiementDiag.moyen)}, réf. <b style="user-select:all">${esc(d.paiementDiag.ref)}</b></div>`:""}${d.paiement?`<div><span>Formation</span> ${esc(d.paiement.moyen)}, réf. <b style="user-select:all">${esc(d.paiement.ref)}</b></div>`:""}</div>`:""}
     ${d.reseaux||d.prix?`<div class="lead-meta">${d.reseaux?`<div><span>Réseaux</span> ${esc(d.reseaux)}</div>`:""}${d.prix?`<div><span>Prix</span> ${esc(d.prix)}</div>`:""}</div>`:""}
     <div class="lead-actions"><select data-statut="${id}" aria-label="Statut">${STATUTS.map(([k,l])=>`<option value="${k}" ${d.statut===k?"selected":""}>${l}</option>`).join("")}</select>
@@ -1389,7 +1396,7 @@ app.addEventListener("input", e => {
     document.getElementById(el.dataset.pay+"-row").innerHTML = sendBtn(el.dataset.pay);
     return;
   }
-  if (el.id === "gencode"){ state.genCode = el.value; const g = parseCode(el.value); const o = document.getElementById("gen-out"); o.textContent = g ? accessCode(g.id) : "······"; if (g && !o.nextElementSibling){ renderAdmin(); const x = document.getElementById("gencode"); x.focus(); x.setSelectionRange(x.value.length, x.value.length); } return; }
+  if (el.id === "gencode"){ state.genCode = el.value; const g = parseCode(el.value); const o = document.getElementById("gen-out"); o.textContent = g ? accessCode(g.id) : "······"; const om = document.getElementById("gen-mem"); if (om) om.textContent = g ? memberCode(g.id) : "······"; if (g && !o.nextElementSibling){ renderAdmin(); const x = document.getElementById("gencode"); x.focus(); x.setSelectionRange(x.value.length, x.value.length); } return; }
   if (el.id === "bilancode"){ state.bilanInput = el.value; }
 });
 app.addEventListener("change", e => {
@@ -1418,13 +1425,18 @@ app.addEventListener("submit", e => {
   if (e.target.id === "unlockform"){
     const v = document.getElementById("access").value.trim().toUpperCase().replace(/\s/g,"");
     const id = parseCode(state.res.code).id;
-    if (v !== accessCode(id)){ state.errors = {access:1}; renderResult(); document.getElementById("access").value = v; return; }
-    state.errors = {}; state.unlocked = true; saveDiag(); renderResult(); toApp();
+    const isMember = v === memberCode(id);
+    if (v !== accessCode(id) && !isMember){ state.errors = {access:1}; renderResult(); document.getElementById("access").value = v; return; }
+    state.errors = {}; state.unlocked = true; state.member = isMember; if (isMember) store.set("jef_member", {code: state.res.code, ac: v});
+    saveDiag(); renderResult(); toApp();
     return;
   }
   if (e.target.id === "bilanform"){
     const c = parseCode(document.getElementById("bilancode").value);
+    const mc = document.getElementById("membercode").value.trim().toUpperCase().replace(/\s/g,"");
+    state.bilanInput = document.getElementById("bilancode").value; state.memberInput = mc;
     if (!c){ state.errors = {code:1}; renderBilanTab(); return; }
+    if (mc !== memberCode(c.id)){ state.errors = {member:1}; renderBilanTab(); return; }
     state.errors = {}; state.prevCode = c; state.mode = "j30"; state.done = false; state.step = 1; state.tab = "diag";
     const last = store.get("jef_last"); if (last && last.code === c.code && !state.a.prenom) state.a.prenom = last.prenom || "";
     render(); toApp();
@@ -1590,7 +1602,7 @@ document.getElementById("progs").addEventListener("pointerleave", e => { documen
 /* ---------- Démarrage ---------- */
 function restoreDiag(){
   const saved = store.get("jef_diag");
-  if (saved && saved.res && saved.a){ state.a = saved.a; state.res = saved.res; state.unlocked = !!saved.unlocked; state.done = true; }
+  if (saved && saved.res && saved.a){ state.a = saved.a; state.res = saved.res; state.unlocked = !!saved.unlocked; state.member = !!saved.member; state.done = true; }
   else { state.done = false; state.step = 1; }
 }
 restoreDiag();
