@@ -523,6 +523,7 @@ h2.has-ic .hic{width:50px;height:50px;font-size:25px;border-radius:14px}
 .wa-fallback{flex-basis:100%;margin-top:4px}
 .wa-fallback summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--bordeaux)}
 .wa-fallback pre{white-space:pre-wrap;word-break:break-word;font-size:13px;background:var(--beige-light);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;max-height:220px;overflow:auto}
+.inapp-hint{flex-basis:100%;margin:0 0 6px;padding:10px 12px;border-radius:10px;background:#FFF4DC;border:1px solid #E8C77A;color:#5A3E00;font-size:14px;line-height:1.45}
 </style>
 </head>
 <body>
@@ -1196,9 +1197,11 @@ document.addEventListener("click", e => {
   window.location.href = app;
   setTimeout(() => { if (!left && !document.hidden) window.location.href = web; }, 1500);
 }, true);
+const IN_APP = /musical_ly|BytedanceWebview|TikTok|Instagram|FBAN|FBAV|Snapchat/i.test(navigator.userAgent);
+const inAppHint = () => IN_APP ? `<p class="inapp-hint">Tu es dans le navigateur de TikTok, Instagram ou Facebook : il bloque souvent WhatsApp. Touche les trois points en haut à droite, puis « Ouvrir dans le navigateur », et appuie de nouveau sur le bouton. Tu peux aussi copier le message juste en dessous.</p>` : "";
 function waBlock(msg, label, id){
-  return `<a class="btn" href="${waLink(msg)}" ${waTarget()}>${esc(label)}</a>
-    <details class="wa-fallback"><summary>WhatsApp ne s'ouvre pas ?</summary>
+  return `${inAppHint()}<a class="btn" href="${waLink(msg)}" ${waTarget()}>${esc(label)}</a>
+    <details class="wa-fallback" ${IN_APP ? "open" : ""}><summary>WhatsApp ne s'ouvre pas ?</summary>
       <p class="help">Copie ce message, puis envoie-le sur WhatsApp au ${esc(WHATSAPP_DISPLAY)}.</p>
       <pre id="${id}">${esc(msg)}</pre>
       <div class="btnrow"><button type="button" class="btn ghost small" data-copy="${id}">${esc(t("copy_msg"))}</button><span class="toast" hidden></span></div>
