@@ -1187,6 +1187,7 @@ const deducted = () => false; /* plus de déduction : le diagnostic est inclus p
 const dueFor = key => priceOf(key) - (deducted() ? PRICES.diag : 0);
 const waLink = msg => `https://api.whatsapp.com/send?phone=${WHATSAPP}&text=${encodeURIComponent(msg)}`;
 const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+const IS_ANDROID = /Android/i.test(navigator.userAgent);
 const IN_FRAME = (() => { try { return window.top !== window.self; } catch(e){ return true; } })();
 /* Sur téléphone, hors de Claude, on ouvre dans le même onglet : les navigateurs intégrés (Instagram, TikTok, Facebook) bloquent souvent les nouveaux onglets. */
 const waTarget = () => (IS_MOBILE && !IN_FRAME) ? 'data-wa="1"' : 'target="_blank" rel="noopener"';
@@ -1201,9 +1202,17 @@ document.addEventListener("click", e => {
   setTimeout(() => { if (!left && !document.hidden) window.location.href = web; }, 1500);
 }, true);
 const IN_APP = /musical_ly|BytedanceWebview|TikTok|Instagram|FBAN|FBAV|Snapchat/i.test(navigator.userAgent);
-if (IN_APP){ const b = document.getElementById("inapp-top"); b.hidden = false; b.innerHTML = "Tu es dans le navigateur de TikTok, Instagram ou Facebook. Pour m'envoyer ton diagnostic sur WhatsApp, ouvre cette page dans Safari ou Chrome : touche les trois points en haut à droite, puis « Ouvrir dans le navigateur »."; }
+if (IN_APP){ const b = document.getElementById("inapp-top"); b.hidden = false; b.innerHTML = IS_ANDROID ? "Si WhatsApp ne s'ouvre pas à la fin du diagnostic, ouvre cette page dans Chrome : touche les trois points en haut à droite, puis « Ouvrir dans le navigateur »." : "Sur iPhone, TikTok et Instagram bloquent WhatsApp. Pour m'envoyer ton diagnostic, ouvre cette page dans Safari : touche les trois points en haut à droite, puis « Ouvrir dans le navigateur »."; }
 const inAppHint = () => IN_APP ? `<p class="inapp-hint">Tu es dans le navigateur de TikTok, Instagram ou Facebook : il bloque souvent WhatsApp. Touche les trois points en haut à droite, puis « Ouvrir dans le navigateur », et appuie de nouveau sur le bouton. Tu peux aussi copier le message juste en dessous.</p>` : "";
+/* Android dans TikTok ou Instagram : un lien « intent » ouvre directement l'application WhatsApp. */
+const waIntent = msg => `intent://send?phone=${WHATSAPP}&text=${encodeURIComponent(msg)}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${encodeURIComponent(waLink(msg))};end`;
 function waBlock(msg, label, id){
+  if (IN_APP && IS_ANDROID) return `<a class="btn" href="${waIntent(msg)}">${esc(label)}</a>
+    <details class="wa-fallback" open><summary>WhatsApp ne s'ouvre pas ?</summary>
+      <p class="help">Copie ce message, puis envoie-le sur WhatsApp au ${esc(WHATSAPP_DISPLAY)}.</p>
+      <pre id="${id}">${esc(msg)}</pre>
+      <div class="btnrow"><button type="button" class="btn ghost small" data-copy="${id}">${esc(t("copy_msg"))}</button><span class="toast" hidden></span></div>
+    </details>`;
   if (IN_APP) return `<p class="inapp-hint">Le navigateur de TikTok, Instagram ou Facebook ne peut pas ouvrir WhatsApp. Deux solutions : ouvre cette page dans Safari ou Chrome (touche les trois points en haut à droite, puis « Ouvrir dans le navigateur »), ou copie ton message et envoie-le-moi toi-même sur WhatsApp au ${esc(WHATSAPP_DISPLAY)}.</p>
     <button type="button" class="btn" data-copy="${id}">Copier mon message</button><span class="toast" hidden></span>
     <pre id="${id}" class="wa-pre">${esc(msg)}</pre>`;
@@ -1222,8 +1231,8 @@ function payFields(prefix, obj){
 function refreshSend(prefix){
   const row = document.getElementById(prefix + "-row"); if (!row) return;
   const obj = prefix === "pd" ? state.payDiag : state.pay, ok = obj.ref.trim().length >= 4;
-  const a = row.querySelector(IN_APP ? "button[data-copy]" : "a.btn");
-  if (ok && a){ const msg = buildMessage(prefix === "pd" ? "paydiag" : "resa"); if (!IN_APP) a.href = waLink(msg); const pre = row.querySelector("pre"); if (pre) pre.textContent = msg; return; }
+  const a = row.querySelector(IN_APP && !IS_ANDROID ? "button[data-copy]" : "a.btn");
+  if (ok && a){ const msg = buildMessage(prefix === "pd" ? "paydiag" : "resa"); if (!IN_APP) a.href = waLink(msg); else if (IS_ANDROID) a.href = waIntent(msg); const pre = row.querySelector("pre"); if (pre) pre.textContent = msg; return; }
   if (!ok && !a) return;
   row.innerHTML = sendBtn(prefix);
 }
