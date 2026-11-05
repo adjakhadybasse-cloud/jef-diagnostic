@@ -1199,6 +1199,14 @@ function payFields(prefix, obj){
   return `<div class="two"><div><label for="${prefix}-moyen">${esc(t("moyen"))}</label><select id="${prefix}-moyen" data-pay="${prefix}" data-k="moyen">${["Wave","Orange Money"].map(m=>`<option ${obj.moyen===m?"selected":""}>${m}</option>`).join("")}</select></div>
     <div><label for="${prefix}-ref">${esc(t("ref"))}</label><input type="text" id="${prefix}-ref" data-pay="${prefix}" data-k="ref" value="${esc(obj.ref)}" placeholder="${esc(t("ref_ph"))}" autocomplete="off"></div></div>`;
 }
+function refreshSend(prefix){
+  const row = document.getElementById(prefix + "-row"); if (!row) return;
+  const obj = prefix === "pd" ? state.payDiag : state.pay, ok = obj.ref.trim().length >= 4;
+  const a = row.querySelector("a.btn");
+  if (ok && a){ const msg = buildMessage(prefix === "pd" ? "paydiag" : "resa"); a.href = waLink(msg); const pre = row.querySelector("pre"); if (pre) pre.textContent = msg; return; }
+  if (!ok && !a) return;
+  row.innerHTML = sendBtn(prefix);
+}
 function sendBtn(prefix){
   const obj = prefix === "pd" ? state.payDiag : state.pay, ok = obj.ref.trim().length >= 4;
   const label = prefix === "pd" ? t("send_pay") : t("send_resa");
@@ -1428,7 +1436,7 @@ app.addEventListener("input", e => {
   if (el.dataset.netHandle){ state.a.nets[el.dataset.netHandle].handle = el.value; return; }
   if (el.dataset.pay){
     const obj = el.dataset.pay === "pd" ? state.payDiag : state.pay; obj[el.dataset.k] = el.value;
-    document.getElementById(el.dataset.pay+"-row").innerHTML = sendBtn(el.dataset.pay);
+    refreshSend(el.dataset.pay);
     return;
   }
   if (el.id === "gencode"){ state.genCode = el.value; const g = parseCode(el.value); const o = document.getElementById("gen-out"); o.textContent = g ? accessCode(g.id) : "······"; const om = document.getElementById("gen-mem"); if (om) om.textContent = g ? memberCode(g.id) : "······"; if (g && !o.nextElementSibling){ renderAdmin(); const x = document.getElementById("gencode"); x.focus(); x.setSelectionRange(x.value.length, x.value.length); } return; }
@@ -1439,12 +1447,12 @@ app.addEventListener("change", e => {
   if (el.type === "radio" && el.name === "tipf"){ state.tipFilter = el.value; renderConseils(); return; }
   if (el.type === "radio" && el.name === "flt"){ state.filter = el.value; renderAdmin(); return; }
   if (el.type === "radio" && el.name === "formule"){ state.a.formule = el.value; saveDiag(); renderResult(); return; }
-  if (el.type === "radio" && el.name === "pdtype"){ state.payDiag.type = el.value; document.getElementById("pd-row").innerHTML = sendBtn("pd"); return; }
+  if (el.type === "radio" && el.name === "pdtype"){ state.payDiag.type = el.value; refreshSend("pd"); return; }
   if (el.type === "radio" && el.name in state.a){ state.a[el.name] = el.value; if (state.errors[el.name]){ delete state.errors[el.name]; const er = el.closest("fieldset").querySelector(".err"); if (er) er.remove(); } return; }
   if (el.id === "nocalc"){ state.a.nocalc = el.checked; delete state.errors.calc; renderDiag(); return; }
   if (el.dataset.netOn){ state.a.nets[el.dataset.netOn].on = el.checked; renderDiag(); return; }
   if (el.dataset.netC){ const c = state.a.nets[el.dataset.netC].c, i = +el.dataset.i; if (el.checked){ if(!c.includes(i)) c.push(i); } else c.splice(c.indexOf(i),1); return; }
-  if (el.dataset.pay){ const obj = el.dataset.pay === "pd" ? state.payDiag : state.pay; obj[el.dataset.k] = el.value; document.getElementById(el.dataset.pay+"-row").innerHTML = sendBtn(el.dataset.pay); return; }
+  if (el.dataset.pay){ const obj = el.dataset.pay === "pd" ? state.payDiag : state.pay; obj[el.dataset.k] = el.value; refreshSend(el.dataset.pay); return; }
   if (el.dataset.statut && state.db){
     el.disabled = true;
     state.db.collection("leads").doc(el.dataset.statut).update({statut: el.value, updated: new Date().toISOString()}).catch(()=>{}).finally(()=>{ el.disabled = false; });
