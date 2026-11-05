@@ -520,6 +520,9 @@ h2.has-ic .hic{width:50px;height:50px;font-size:25px;border-radius:14px}
 .pchoice .pc-go{font-weight:700;color:#7A1F2E;margin-top:4px}
 @media (max-width:620px){.pchoices{grid-template-columns:1fr}}
 
+.wa-fallback{flex-basis:100%;margin-top:4px}
+.wa-fallback summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--bordeaux)}
+.wa-fallback pre{white-space:pre-wrap;word-break:break-word;font-size:13px;background:var(--beige-light);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;max-height:220px;overflow:auto}
 </style>
 </head>
 <body>
@@ -930,7 +933,7 @@ function renderTicker(){
     <button type="button" class="tick-more" data-goto="conseils">${esc(t("tip_more"))}</button></div>`;
 }
 function tipCard(tip, date, big){
-  const share = `https://wa.me/?text=${encodeURIComponent(tip[1] + "\n\n" + tip[2] + "\n\nConseil JËF Communauté")}`;
+  const share = `https://api.whatsapp.com/send?text=${encodeURIComponent(tip[1] + "\n\n" + tip[2] + "\n\nConseil JËF Communauté")}`;
   return `<article class="tip ${big?"big":""}"><div class="tip-meta"><span class="pill">${esc(tip[0])}</span>${date?`<span>${esc(fmtDate(date))}</span>`:""}</div>
     <h3>${esc(tip[1])}</h3><p>${esc(tip[2])}</p>${big?`<div class="btnrow"><a class="btn ghost small" href="${share}" target="_blank" rel="noopener">${esc(t("tip_share"))}</a></div>`:""}</article>`;
 }
@@ -1123,7 +1126,7 @@ function shareCardHTML(a, s, prog){
       <div class="scard-prog"><small>${esc(t("card_prog"))}</small><b>${esc(prog.name)}</b> <em>${esc(prog.tag)}</em></div>
       <div class="scard-foot"><span>${esc(t("card_cta"))}</span><span class="scard-slogan">Moins de blabla, plus de jëf.</span></div>
     </div>
-    <div class="btnrow"><a class="btn" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">${esc(t("card_send"))}</a></div></div>`;
+    <div class="btnrow"><a class="btn" href="https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}" ${waTarget()}>${esc(t("card_send"))}</a></div></div>`;
 }
 
 /* ---------- Résultat ---------- */
@@ -1178,7 +1181,19 @@ function buildMessage(kind){
 }
 const deducted = () => false; /* plus de déduction : le diagnostic est inclus pour les inscrites */
 const dueFor = key => priceOf(key) - (deducted() ? PRICES.diag : 0);
-const waLink = msg => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+const waLink = msg => `https://api.whatsapp.com/send?phone=${WHATSAPP}&text=${encodeURIComponent(msg)}`;
+const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+const IN_FRAME = (() => { try { return window.top !== window.self; } catch(e){ return true; } })();
+/* Sur téléphone, hors de Claude, on ouvre dans le même onglet : les navigateurs intégrés (Instagram, TikTok, Facebook) bloquent souvent les nouveaux onglets. */
+const waTarget = () => (IS_MOBILE && !IN_FRAME) ? "" : 'target="_blank" rel="noopener"';
+function waBlock(msg, label, id){
+  return `<a class="btn" href="${waLink(msg)}" ${waTarget()}>${esc(label)}</a>
+    <details class="wa-fallback"><summary>WhatsApp ne s'ouvre pas ?</summary>
+      <p class="help">Copie ce message, puis envoie-le sur WhatsApp au ${esc(WHATSAPP_DISPLAY)}.</p>
+      <pre id="${id}">${esc(msg)}</pre>
+      <div class="btnrow"><button type="button" class="btn ghost small" data-copy="${id}">${esc(t("copy_msg"))}</button><span class="toast" hidden></span></div>
+    </details>`;
+}
 
 function payFields(prefix, obj){
   return `<div class="two"><div><label for="${prefix}-moyen">${esc(t("moyen"))}</label><select id="${prefix}-moyen" data-pay="${prefix}" data-k="moyen">${["Wave","Orange Money"].map(m=>`<option ${obj.moyen===m?"selected":""}>${m}</option>`).join("")}</select></div>
@@ -1187,7 +1202,7 @@ function payFields(prefix, obj){
 function sendBtn(prefix){
   const obj = prefix === "pd" ? state.payDiag : state.pay, ok = obj.ref.trim().length >= 4;
   const label = prefix === "pd" ? t("send_pay") : t("send_resa");
-  return ok ? `<a class="btn" href="${waLink(buildMessage(prefix === "pd" ? "paydiag" : "resa"))}" target="_blank" rel="noopener">${esc(label)}</a>`
+  return ok ? waBlock(buildMessage(prefix === "pd" ? "paydiag" : "resa"), label, "msg-" + prefix)
             : `<button type="button" class="btn" data-need="${prefix}">${esc(label)}</button><span class="err" id="${prefix}-err" hidden>${esc(t("e_ref"))}</span>`;
 }
 
@@ -1211,7 +1226,7 @@ function renderResult(){
         <div class="legend"><span><i style="background:var(--beige-dark);opacity:.55"></i>${esc(t("before"))}</span><span><i style="background:var(--bordeaux)"></i>${esc(t("after"))}</span></div></div>
       <div class="block"><h3>${esc(t("j30_next"))}</h3>${focusList}</div>${prix}${nets}
       <div class="block wa"><h3>${esc(t("send_j30"))}</h3><p>${esc(t("j30_text"))}</p><pre id="msg-j30">${esc(msg)}</pre>
-        <div class="btnrow"><a class="btn" href="${waLink(msg)}" target="_blank" rel="noopener">${esc(t("send_j30"))}</a><button type="button" class="btn ghost small" data-copy="msg-j30">${esc(t("copy_msg"))}</button><span class="toast" hidden></span></div>
+        <div class="btnrow"><a class="btn" href="${waLink(msg)}" ${waTarget()}>${esc(t("send_j30"))}</a><button type="button" class="btn ghost small" data-copy="msg-j30">${esc(t("copy_msg"))}</button><span class="toast" hidden></span></div>
         <div class="help">${esc(fill(t("num_line"),{n:WHATSAPP_DISPLAY}))}</div></div>`;
   } else if (open){
     html += `<div class="block"><h3>${esc(t("score_title"))}</h3><p class="help">${esc(t("score_sub"))}</p>${pillarsHTML(s)}</div>
